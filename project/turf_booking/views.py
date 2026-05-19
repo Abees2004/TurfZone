@@ -6,6 +6,31 @@ from django.db.models import Q
 from django.db.models import Sum,Case,Avg,Count,When,IntegerField,F, Value
 from datetime import datetime
 from datetime import timedelta
+from django.shortcuts import render,redirect,get_object_or_404
+from django.contrib import messages
+from turf_booking.models import *
+from django.contrib.auth import logout,login,authenticate
+from django.shortcuts import render,redirect,get_object_or_404
+import json
+import razorpay
+from datetime import datetime
+
+from django.conf import settings
+from django.shortcuts import render
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
+
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
+from django.conf import settings
+import razorpay
+import json
+
+
+
 
 # Create your views here.
 def home(request):
@@ -70,10 +95,6 @@ def register(request):
         user_email=request.POST.get('email')
         user_password=request.POST.get('password')
         confirm_password=request.POST.get('confirm_password')
-        # phno=request.POST.get('phone_number')
-        # location=request.POST.get('location')
-        # image=request.FILES.get('profile_picture')
-        # about_me=request.POST.get('about_me')
         if user_password!=confirm_password:
             messages.error(request,'MISMATCH PASSWORD')
             return redirect('register') 
@@ -349,24 +370,7 @@ def changeratings(request,turf_id):
 
 
 # views.py
-import json
-import razorpay
 
-from datetime import datetime
-
-from django.conf import settings
-from django.shortcuts import render
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.views.decorators.csrf import csrf_exempt
-
-from django.http import JsonResponse, HttpResponseBadRequest
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from datetime import datetime
-from django.conf import settings
-import razorpay
-import json
 
 from .models import turfs, turfbooking
 
@@ -386,15 +390,11 @@ def create_order(request):
 
     client = get_client()
 
-    # ---------------- METHOD CHECK ----------------
-
     if request.method != "POST":
         return JsonResponse({
             "status": "failure",
             "message": "Invalid request method"
         }, status=400)
-
-    # ---------------- JSON CHECK ----------------
 
     try:
         body = json.loads(request.body)
@@ -409,14 +409,11 @@ def create_order(request):
     from datetime import datetime
     from django.utils import timezone
 
-    # ---------------- GET DATA ----------------
 
     date_value = body.get("date")
     start = body.get("start_time")
     end = body.get("end_time")
     turf_id = body.get("turf_id")
-
-    # ---------------- REQUIRED FIELD CHECK ----------------
 
     if not (date_value and start and end and turf_id):
 
@@ -425,7 +422,6 @@ def create_order(request):
             "message": "Missing booking details"
         }, status=400)
 
-    # ---------------- TURF CHECK ----------------
 
     try:
         turf = turfs.objects.get(id=turf_id)
@@ -437,7 +433,6 @@ def create_order(request):
             "message": "Invalid turf selected"
         }, status=400)
 
-    # ---------------- DATE/TIME PARSE ----------------
 
     try:
 
@@ -463,7 +458,6 @@ def create_order(request):
             "message": "Invalid date or time format"
         }, status=400)
 
-    # ---------------- END TIME VALIDATION ----------------
 
     if end_time <= start_time:
 
@@ -472,11 +466,8 @@ def create_order(request):
             "message": "End time must be greater than start time"
         }, status=400)
 
-    # ---------------- PAST TIME VALIDATION ----------------
-
     now = timezone.localtime()
 
-    # only check for today's bookings
     if booking_date == now.date():
 
         booking_start_datetime = datetime.combine(
@@ -490,9 +481,7 @@ def create_order(request):
                 "status": "failure",
                 "message": "Cannot book past time slots"
             }, status=400)
-
-    # ---------------- SLOT AVAILABILITY CHECK ----------------
-
+        
     if not is_slot_available(
         booking_date,
         turf,
@@ -505,7 +494,6 @@ def create_order(request):
             "message": "Slot already booked"
         }, status=400)
 
-    # ---------------- PRICE CALCULATION ----------------
 
     start_decimal = (
         start_time.hour +
@@ -521,8 +509,6 @@ def create_order(request):
 
     amount = int(diff_hours * turf.price * 100)
 
-    # ---------------- CREATE RAZORPAY ORDER ----------------
-
     order_data = {
         "amount": amount,
         "currency": "INR",
@@ -530,8 +516,6 @@ def create_order(request):
     }
 
     order = client.order.create(data=order_data)
-
-    # ---------------- SUCCESS RESPONSE ----------------
 
     return JsonResponse({
         "status": "success",
@@ -549,9 +533,6 @@ def payment_handler(request):
 
     client = get_client()
 
-    # ------------------------------------------------
-    # METHOD CHECK
-    # ------------------------------------------------
 
     if request.method != "POST":
 
@@ -560,9 +541,6 @@ def payment_handler(request):
             "message": "Invalid request method"
         }, status=400)
 
-    # ------------------------------------------------
-    # JSON CHECK
-    # ------------------------------------------------
 
     try:
 
@@ -575,27 +553,15 @@ def payment_handler(request):
             "message": "Invalid JSON"
         }, status=400)
 
-    # ------------------------------------------------
-    # PAYMENT DATA
-    # ------------------------------------------------
-
     payment_id = body.get("razorpay_payment_id")
     order_id = body.get("razorpay_order_id")
     signature = body.get("razorpay_signature")
-
-    # ------------------------------------------------
-    # BOOKING DATA
-    # ------------------------------------------------
 
     booking_date = body.get("booking_date")
     start_time = body.get("start_time")
     end_time = body.get("end_time")
     turf_id = body.get("turf_id")
     extras = body.get("extras", {})
-
-    # ------------------------------------------------
-    # REQUIRED FIELD CHECK
-    # ------------------------------------------------
 
     if not all([
         payment_id,
@@ -612,9 +578,6 @@ def payment_handler(request):
             "message": "Missing booking data"
         }, status=400)
 
-    # ------------------------------------------------
-    # VERIFY PAYMENT SIGNATURE
-    # ------------------------------------------------
 
     try:
 
@@ -638,10 +601,6 @@ def payment_handler(request):
             "message": "Payment verification failed"
         }, status=400)
 
-    # ------------------------------------------------
-    # DUPLICATE PAYMENT CHECK
-    # ------------------------------------------------
-
     existing_booking = turfbooking.objects.filter(
         razorpay_payment_id=payment_id
     ).first()
@@ -661,10 +620,6 @@ def payment_handler(request):
 
         turf = turfs.objects.get(id=turf_id)
 
-        # ------------------------------------------------
-        # CONVERT DATE/TIME
-        # ------------------------------------------------
-
         fmt = "%H:%M"
 
         booking_date_obj = datetime.strptime(
@@ -682,10 +637,6 @@ def payment_handler(request):
             fmt
         )
 
-        # ------------------------------------------------
-        # SLOT AVAILABILITY RECHECK
-        # ------------------------------------------------
-
         if not is_slot_available(
             booking_date_obj,
             turf,
@@ -698,9 +649,6 @@ def payment_handler(request):
                 "message": "Slot already booked by another user"
             }, status=400)
 
-        # ------------------------------------------------
-        # DURATION CHECK
-        # ------------------------------------------------
 
         diff_minutes = (
             (t1.hour * 60 + t1.minute)
@@ -716,9 +664,6 @@ def payment_handler(request):
                 "message": "Invalid duration"
             }, status=400)
 
-        # ------------------------------------------------
-        # PRICE CALCULATION
-        # ------------------------------------------------
 
         rate_per_hour = turf.price
 
@@ -734,9 +679,6 @@ def payment_handler(request):
 
         total_amount = base_amount + extras_cost
 
-        # ------------------------------------------------
-        # CREATE BOOKING
-        # ------------------------------------------------
 
         booking = turfbooking.objects.create(
 
@@ -764,10 +706,6 @@ def payment_handler(request):
 
             is_paid=True
         )
-
-        # ------------------------------------------------
-        # SUCCESS RESPONSE
-        # ------------------------------------------------
 
         return JsonResponse({
 
@@ -821,15 +759,6 @@ def payment_handler(request):
 
 
 
-from django.shortcuts import render,redirect,get_object_or_404
-from django.contrib import messages
-from turf_booking.models import *
-from django.contrib.auth import logout,login,authenticate
-from django.utils.timezone import make_aware,get_current_timezone
-from datetime import datetime
-from datetime import timedelta
-from turf_booking.models import *
-from django.db.models import Sum,Case,Count,When,IntegerField,F, Value
 
 # Create your views here.
 total_userrequest=0
@@ -1023,20 +952,8 @@ def admin_deleteturf(request,turf_id):
 
 
 
-from django.shortcuts import render,redirect,get_object_or_404
-from django.contrib import messages
-from .models import *
-from turf_booking.models import *
-from django.contrib.auth import logout,login,authenticate
-from django.db.models import Sum,Avg,Count,When,IntegerField,F, Value
-from django.utils.timezone import make_aware,get_current_timezone
-from datetime import datetime
-from datetime import timedelta
-
-# Create your views here.
 
 
-from datetime import datetime, time
 
 def staff_dashboard(request):
     bookings = turfbooking.objects.filter(turf__partner=request.user)

@@ -417,7 +417,6 @@ const summaryTotal = document.getElementById('summary-total');
 
 const btnSummaryConfirm = document.getElementById('btn-summary-confirm');
 
-// ✅ FIX: force numeric value safely
 const ratePerHour = Number("{{ turf.price|default:0 }}");
 
 bookingDateEl.addEventListener('input', () => {
@@ -490,8 +489,6 @@ function updateTotal() {
   btnSummaryConfirm.disabled = false;
 }
 
-// ---------------- PAYMENT ----------------
-
 document.getElementById('btn-confirm').addEventListener('click', function(e) {
   e.preventDefault();
 
@@ -518,10 +515,8 @@ document.getElementById('btn-confirm').addEventListener('click', function(e) {
 })
 .then(async (res) => {
 
-  // ✅ convert response safely
   const responseData = await res.json().catch(() => null);
 
-  // ✅ if backend error
   if (!res.ok) {
 
     if (responseData && responseData.message) {
@@ -537,7 +532,6 @@ document.getElementById('btn-confirm').addEventListener('click', function(e) {
 })
 .then(orderData => {
 
-  // stop execution if error happened
   if (!orderData) return;
 
   const options = {
