@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Turf Booking & Payment</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    .navbar {
+      background-color: #ffffff;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .navbar-brand, .nav-link {
+      color: #212529 !important;
+      font-weight: 500;
+      transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .nav-link:hover {
+      color: #007bff !important;
+      transform: translateY(-2px);
+    }
+    .navbar-brand:hover {
+      color: #007bff !important;
+      transform: scale(1.05);
+    }
+    .navbar-nav .nav-link.active {
+      font-weight: 600;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+    .dropdown-menu {
+      background-color: #ffffff;
+      border: 1px solid rgba(0,0,0,0.15);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .dropdown-item {
+      color: #212529;
+    }
+    .dropdown-item:hover {
+      background-color: #f8f9fa;
+      color: #007bff;
+    }
+    .hero {
+      position: relative;
+      height: 400px;
+      background-image: url('{{ turf.image.url }}');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #fff;
+    }
+    .hero .overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.5);
+    }
+    .hero .hero-text {
+      position: absolute;
+      bottom: 20px; left: 20px;
+    }
+    .slot-card {
+      cursor: pointer;
+      transition: transform .2s, background .2s;
+      border: 1px solid #ddd;
+      border-radius: .5rem;
+    }
+    .slot-card.selected {
+      background-color: #d1e7dd;
+      border-color: #0f5132;
+    }
+    .slot-card.booked {
+      background-color: #f8d7da;
+      border-color: #842029;
+      cursor: not-allowed;
+    }
+    .sticky-summary {
+      position: sticky;
+      top: 100px;
+    }
+    .profile-img {
+      width: 35px;
+      height: 35px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .star-rating .bi-star-fill,
+    .star-rating .bi-star-half {
+      color: #ffc107;
+    }
+    .star-rating .bi-star {
+      color: #e4e5e9;
+    }
+    .interactive-stars {
+      direction: rtl;
+      display: inline-block;
+    }
+    .interactive-stars input {
+      display: none;
+    }
+    .interactive-stars label {
+      font-size: 2rem;
+      color: #e4e5e9;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .interactive-stars label:hover,
+    .interactive-stars label:hover ~ label,
+    .interactive-stars input:checked ~ label {
+      color: #ffc107;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg sticky-top mb-3">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="https://via.placeholder.com/40x40/007bff/ffffff?text=APP" alt="Logo"
+             width="40" height="40" class="d-inline-block align-text-top me-2">
+        <span class="fs-5">MyApp</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarContent" aria-controls="navbarContent"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'turfs' %}">Turfs</a></li>
+          {% if user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'my_bookings' %}">Bookings</a></li>
+          {% endif %}
+          {% if user.is_authenticated %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'myprofile' %}">{{ user.username|capfirst }}</a></li>
+            {% if user.is_superuser %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}">AdminDashboard</a></li>
+            {% elif user.is_staff %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'staff_dashboard' %}">StaffDashboard</a></li>
+            {% else %}
+              <li class="nav-item"><a class="nav-link" href="{% url 'direct_partner_registration' %}">Partner</a></li>
+            {% endif %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown"
+                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                {% if user.image %}
+                  <img src="{{ user.image.url }}" alt="Profile" class="profile-img me-2" />
+                {% else %}
+                  <i class="bi bi-person-circle fs-5 me-2"></i>
+                {% endif %}
+                <span>{{ user.username|capfirst }}</span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                <li><a class="dropdown-item" href="{% url 'myprofile' %}">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'logout_view' %}">Logout</a></li>
+              </ul>
+            </li>
+          {% else %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'login_view' %}">Login</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="hero mb-4">
+    <div class="overlay"></div>
+    <div class="hero-text container">
+      <h2>Turf Booking Details</h2>
+      <p>{{ turf.name|capfirst }} • {{ turf.location }}</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row gy-4">
+      <!-- Left side: booking form etc -->
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-body">
+            <h4>{{ turf.name|capfirst }}</h4>
+            <p>Standard 7-a-side Astro turf with floodlights, changing rooms, parking, etc.</p>
+            <dl class="row">
+              <dt class="col-sm-5">Surface:</dt><dd class="col-sm-7">Astro Turf</dd>
+              <dt class="col-sm-5">Dimensions:</dt><dd class="col-sm-7">60m × 40m</dd>
+              <dt class="col-sm-5">Lights:</dt><dd class="col-sm-7">Yes</dd>
+            </dl>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div class="booking-box">
+            <h4>Book Your Slot</h4>
+            <form id="bookingForm">
+              {% csrf_token %}
+              <div class="mb-3">
+                <label for="bookingDate" class="form-label">Select Date</label>
+                <input type="date" class="form-control" id="bookingDate" name="date" required>
+              </div>
+              <div class="mb-3">
+                <label for="startTime" class="form-label">Start Time</label>
+                <select class="form-select" id="startTime" name="start_time" required>
+                  <option selected disabled>Choose a time</option>
+                  <option value="05:00">05:00 AM</option>
+                  <option value="06:00">06:00 AM</option>
+                  <option value="07:00">07:00 AM</option>
+                  <option value="08:00">08:00 AM</option>
+                  <option value="09:00">09:00 AM</option>
+                  <option value="10:00">10:00 AM</option>
+                  <option value="11:00">11:00 AM</option>
+                  <option value="12:00">12:00 PM</option>
+                  <option value="13:00">01:00 PM</option>
+                  <option value="14:00">02:00 PM</option>
+                  <option value="15:00">03:00 PM</option>
+                  <option value="16:00">04:00 PM</option>
+                  <option value="17:00">05:00 PM</option>
+                  <option value="18:00">06:00 PM</option>
+                  <option value="19:00">07:00 PM</option>
+                  <option value="20:00">08:00 PM</option>
+                  <option value="21:00">09:00 PM</option>
+                  <option value="22:00">10:00 PM</option>
+                  <option value="23:00">11:00 PM</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="endTime" class="form-label">End Time</label>
+                <select class="form-select" id="endTime" name="end_time" required>
+                  <option selected disabled>Choose a time</option>
+                  <option value="06:00">06:00 AM</option>
+                  <option value="07:00">07:00 AM</option>
+                  <option value="08:00">08:00 AM</option>
+                  <option value="09:00">09:00 AM</option>
+                  <option value="10:00">10:00 AM</option>
+                  <option value="11:00">11:00 AM</option>
+                  <option value="12:00">12:00 PM</option>
+                  <option value="13:00">01:00 PM</option>
+                  <option value="14:00">02:00 PM</option>
+                  <option value="15:00">03:00 PM</option>
+                  <option value="16:00">04:00 PM</option>
+                  <option value="17:00">05:00 PM</option>
+                  <option value="18:00">06:00 PM</option>
+                  <option value="19:00">07:00 PM</option>
+                  <option value="20:00">08:00 PM</option>
+                  <option value="21:00">09:00 PM</option>
+                  <option value="22:00">10:00 PM</option>
+                  <option value="23:00">11:00 PM</option>
+                  <option value="23:59">11:59 PM</option>
+                </select>
+              </div>
+              <div class="d-grid mt-4">
+                <button type="button" class="btn btn-primary" id="btn-confirm">Confirm Booking</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5>Add-Ons</h5>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="floodlights" data-price="100">
+              <label class="form-check-label" for="floodlights">Floodlights (+ ₹100/hr)</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="shoes" data-price="50">
+              <label class="form-check-label" for="shoes">Rental Shoes (+ ₹50)</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-4">
+          <div class="card-body">
+            <h5>Rules & Policies</h5>
+            <ul>
+              <li>Booking must be cancelled 4-hours before slot start.</li>
+              <li>Floodlight charges apply after sunset.</li>
+              <li>Damage deposit refundable on inspection.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right side: summary & actions -->
+      <div class="col-lg-4">
+        <div class="card sticky-summary">
+          <div class="card-body">
+            <h5>Booking Summary</h5>
+            <dl class="row">
+              <dt class="col-6">Date:</dt><dd class="col-6" id="summary-date">Not selected</dd>
+              <dt class="col-6">Time:</dt><dd class="col-6" id="summary-time">Not selected</dd>
+              <dt class="col-6">Duration:</dt><dd class="col-6" id="summary-duration">0 hr</dd>
+              <dt class="col-6">Price/hr:</dt><dd class="col-6">₹ {{ turf.price }}</dd>
+              <dt class="col-6">Extras:</dt><dd class="col-6" id="summary-extras">₹ 0</dd>
+              <dt class="col-6">Total:</dt><dd class="col-6" id="summary-total">₹ 0</dd>
+            </dl>
+            <div class="d-grid gap-2 mt-3">
+              <button class="btn btn-primary" disabled id="btn-summary-confirm">Confirm & Pay</button>
+              <button class="btn btn-outline-secondary">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- row end -->
+  </div> <!-- container end -->
+
+  <div class="container my-5">
+    <h3 class="mb-4">Ratings & Reviews</h3>
+
+    <div class="mb-4">
+      <div class="d-flex align-items-center">
+        <span id="avg-rating" class="fs-1 me-2">{{ ratingsavg }}</span>
+        <div>
+          <div id="avg-stars" class="text-warning">
+            <!-- stars via logic -->
+          </div>
+          <div class="text-muted">based on <span id="num-reviews">{{ ratingcount }}</span> reviews</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5 mb-5">
+      <h5>Leave a Review</h5>
+      {% if ratings %}
+        <form id="reviewForm" method="POST" action="{% url 'changeratings' turf.id %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Your Old Rating</label><br>
+            <h3>You previously gave {{ ratings.rating }} <i class="bi bi-star-fill text-warning"></i></h3>
+            <h3>Review : {{ ratings.review }}</h3>
+            <h5>Change Old Rating / Review</h5>
+            <div class="interactive-stars">
+              <input type="radio" name="rating" id="star5" value="5"><label for="star5" class="bi bi-star-fill"></label>
+              <input type="radio" name="rating" id="star4" value="4"><label for="star4" class="bi bi-star-fill"></label>
+              <input type="radio" name="rating" id="star3" value="3"><label for="star3" class="bi bi-star-fill"></label>
+              <input type="radio" name="rating" id="star2" value="2"><label for="star2" class="bi bi-star-fill"></label>
+              <input type="radio" name="rating" id="star1" value="1"><label for="star1" class="bi bi-star-fill"></label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="reviewText" class="form-label">Review</label>
+            <textarea class="form-control" name="review" id="reviewText" rows="3" required>{{ ratings.review }}</textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+      {% else %}
+        <form id="reviewForm" method="POST" action="{% url 'addratings' turf.id %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Your Rating</label><br>
+            <div class="interactive-stars">
+              <input type="radio" name="rating" id="star5" value="5"><label for="star5" class="bi bi-star-fill"></label>
+              <input type="radio" name="rating" id="star4" value="4"><label for="star4" class="bi bi-star-fill"></label>
+              <input type="radio" name="rating" id="star3" value="3"><label for="star3" class "bi bi-star-fill"></label>
+              <input type="radio" name="rating" id="star2" value="2"><label for="star2" class="bi bi-star-fill"></label>
+              <input type="radio" name="rating" id="star1" value="1"><label for="star1" class="bi bi-star-fill"></label>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="reviewText" class="form-label">Review</label>
+            <textarea class="form-control" name="review" id="reviewText" rows="3" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit Review</button>
+        </form>
+      {% endif %}
+    </div>
+
+    <div id="reviews-list" class="row g-4">
+      {% for review in reviews_list %}
+        <div class="col-12">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <h5 class="card-title mb-0">{{ review.user.username|capfirst }}</h5>
+                <div class="text-warning">
+                  {{ review.rating }} <i class="bi bi-star-fill"></i>
+                </div>
+              </div>
+              <p class="text-muted small">{{ review.created_at|date:"d M Y" }}</p>
+              <p class="card-text">{{ review.review }}</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const bookingDateEl = document.getElementById('bookingDate');
+const startTimeEl = document.getElementById('startTime');
+const endTimeEl = document.getElementById('endTime');
+
+const summaryDate = document.getElementById('summary-date');
+const summaryTime = document.getElementById('summary-time');
+const summaryDuration = document.getElementById('summary-duration');
+const summaryExtras = document.getElementById('summary-extras');
+const summaryTotal = document.getElementById('summary-total');
+
+const btnSummaryConfirm = document.getElementById('btn-summary-confirm');
+
+// ✅ FIX: force numeric value safely
+const ratePerHour = Number("{{ turf.price|default:0 }}");
+
+bookingDateEl.addEventListener('input', () => {
+  summaryDate.innerText = bookingDateEl.value || "Not selected";
+  updateTotal();
+});
+
+startTimeEl.addEventListener('change', updateSummary);
+endTimeEl.addEventListener('change', updateSummary);
+
+document.querySelectorAll('#floodlights, #shoes').forEach(el => {
+  el.addEventListener('change', updateTotal);
+});
+
+function updateSummary() {
+  const st = startTimeEl.value;
+  const et = endTimeEl.value;
+
+  summaryTime.innerText = (st && et) ? `${st} - ${et}` : "Not selected";
+
+  if (st && et) {
+    const [sh, sm] = st.split(':').map(Number);
+    const [eh, em] = et.split(':').map(Number);
+
+    let diff = (eh + em / 60) - (sh + sm / 60);
+    if (diff < 0) diff = 0;
+
+    summaryDuration.innerText = `${diff} hr`;
+    updateTotal();
+  }
+}
+
+function updateTotal() {
+  const st = startTimeEl.value;
+  const et = endTimeEl.value;
+
+  if (!(st && et)) {
+    summaryTotal.innerText = "₹ 0";
+    btnSummaryConfirm.disabled = true;
+    return;
+  }
+
+  const [sh, sm] = st.split(':').map(Number);
+  const [eh, em] = et.split(':').map(Number);
+
+  let diff = (eh + em / 60) - (sh + sm / 60);
+  if (diff <= 0) {
+    summaryTotal.innerText = "₹ 0";
+    btnSummaryConfirm.disabled = true;
+    return;
+  }
+
+  let totalCost = diff * ratePerHour;
+
+  let extrasCost = 0;
+
+  if (document.getElementById('floodlights').checked) {
+    extrasCost += 100 * diff;
+  }
+
+  if (document.getElementById('shoes').checked) {
+    extrasCost += 50;
+  }
+
+  totalCost += extrasCost;
+
+  summaryExtras.innerText = `₹ ${extrasCost}`;
+  summaryTotal.innerText = `₹ ${totalCost}`;
+
+  btnSummaryConfirm.disabled = false;
+}
+
+// ---------------- PAYMENT ----------------
+
+document.getElementById('btn-confirm').addEventListener('click', function(e) {
+  e.preventDefault();
+
+  const form = document.getElementById('bookingForm');
+  const formData = new FormData(form);
+
+  let data = {};
+  formData.forEach((v, k) => data[k] = v);
+
+  data.turf_id = "{{ turf.id }}";
+
+  data.extras = {
+    floodlights: document.getElementById('floodlights').checked,
+    shoes: document.getElementById('shoes').checked
+  };
+
+  fetch("{% url 'create_order' %}", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "X-CSRFToken": "{{ csrf_token }}"
+  },
+  body: JSON.stringify(data)
+})
+.then(async (res) => {
+
+  // ✅ convert response safely
+  const responseData = await res.json().catch(() => null);
+
+  // ✅ if backend error
+  if (!res.ok) {
+
+    if (responseData && responseData.message) {
+      alert(responseData.message);
+    } else {
+      alert("Something went wrong");
+    }
+
+    return;
+  }
+
+  return responseData;
+})
+.then(orderData => {
+
+  // stop execution if error happened
+  if (!orderData) return;
+
+  const options = {
+    key: orderData.key,
+    amount: orderData.amount,
+    currency: orderData.currency,
+    name: "{{ turf.name }}",
+    description: "Turf Booking Payment",
+    order_id: orderData.order_id,
+
+    handler: function(response) {
+
+      fetch("{% url 'payment_handler' %}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_signature: response.razorpay_signature,
+          booking_date: data.date,
+          start_time: data.start_time,
+          end_time: data.end_time,
+          turf_id: data.turf_id,
+          extras: data.extras
+        })
+      })
+      .then(r => r.json())
+      .then(result => {
+
+        if (result.status === "success") {
+          alert("Booking confirmed successfully!");
+          location.reload();
+        } else {
+          alert(result.message);
+        }
+
+      });
+
+    },
+
+    prefill: {
+      name: "{{ user.username }}",
+      email: "{{ user.email }}",
+      contact: ""
+    },
+
+    theme: {
+      color: "#528FF0"
+    }
+  };
+
+  const rzp = new Razorpay(options);
+  rzp.open();
+
+})
+.catch(err => {
+  console.log(err);
+  alert("Server error");
+});
+
+});
+</script>
+
+</body>
+</html>

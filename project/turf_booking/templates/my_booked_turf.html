@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TurfZone - Booking Confirmation</title>
+    <!-- Bootstrap 5.3.2 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom CSS Variables for easy theme changes */
+        :root {
+            --primary-color: #10b981; /* Emerald/Teal-like Green */
+            --primary-dark: #059669;
+            --dark-color: #212529;
+            --light-gray: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--light-gray);
+            color: var(--dark-color);
+            padding: top 2px; ; /* Space for fixed header */
+        }
+        
+        /* Fixed Header Style */
+        .booking-header {
+            background-color: #ffffff;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Card Styling */
+        .details-card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Sticky Summary for Large Screens *
+
+        /* Custom Gradient Button */
+        .confirm-btn-gradient {
+            background-image: linear-gradient(to right, #14b8a6, #22c55e);
+            border: none;
+            color: white;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s;
+        }
+
+        .confirm-btn-gradient:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            opacity: 0.9;
+        }
+
+        /* Subtle Animation */
+        @keyframes fadeInMoveUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-form {
+            animation: fadeInMoveUp 0.8s ease-out;
+        }
+
+        /* Custom form-control focus */
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(16, 185, 129, 0.25); /* Primary color with transparency */
+        }
+    .profile-img {
+      width: 35px;
+      height: 35px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
+    .profile-img {
+      width: 35px;
+      height: 35px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .navbar {
+        background-color: #ffffff; /* White background */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    }
+    .navbar-brand, .nav-link {
+        color: #212529 !important; /* Dark color for text */
+        font-weight: 500;
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .nav-link:hover {
+        color: #007bff !important; /* A nice blue for a modern accent */
+        transform: translateY(-2px);
+    }
+    .navbar-brand:hover {
+        color: #007bff !important;
+        transform: scale(1.05);
+    }
+    .navbar-nav .nav-link.active {
+      font-weight: 600;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+    .dropdown-menu {
+      background-color: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .dropdown-item {
+      color: #212529;
+    }
+    .dropdown-item:hover {
+      background-color: #f8f9fa;
+      color: #007bff;
+    }
+    .dropdown-divider {
+      background-color: #dee2e6;
+    }
+  </style>
+</head>
+<body>
+
+
+  <nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="https://via.placeholder.com/40x40/007bff/ffffff?text=APP" alt="Logo" width="40" height="40" class="d-inline-block align-text-top me-2">
+        <span class="fs-5">MyApp</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarContent" aria-controls="navbarContent"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'turfs' %}">Turfs</a>
+          </li>
+          {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'my_bookings' %}">Bookings</a>
+          </li>
+          {% endif %}
+          {% if user.is_authenticated %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'myprofile' %}">{{user.username | capfirst}}</a></li>
+              {% if user.is_superuser %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'admin_dashboard' %}">AdminDashboard</a></li>
+              {% elif user.is_staff %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'staff_dashboard' %}">StaffDashboard</a></li>
+              {% else %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'direct_partner_registration' %}">Partner</a></li>
+              {% endif %}
+
+          {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'login_view' %}">Login</a></li>
+          {% endif %}
+
+          {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown"
+               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+               {% if user.image %}
+                <img src="data:image/jpeg;base64,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" alt="Profile" class="profile-img me-2" />
+               {% else %}
+                <span><i class="bi bi-person-circle fs-5"></i></span>
+               {% endif %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+              <li><a class="dropdown-item" href="{% url 'myprofile' %}">Profile</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="{% url 'logout_view' %}">Logout</a></li>
+            </ul>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+    <!-- Fixed Header -->
+    <header class="booking-header">
+        <div class="container py-3">
+            <h1 class="text-center fs-3 fw-bolder tracking-tight mb-0">
+                Booking 
+                {% if booking.is_canceled %}
+                <span class="text-danger">Canceled</span>
+                {% else %}
+                <span class="text-success">Confirmed</span>
+                {% endif %}
+            </h1>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="container py-4 py-md-5">
+        
+        <div class="row g-4 g-lg-5">
+            
+            <!-- Left Column: Details & User Info (col-lg-8) -->
+            <div class="col-lg-8 animate-form">
+                
+                <!-- Turf Details Card -->
+                <div class="card details-card p-3 p-md-4 mb-4">
+                    <div class="card-body">
+                        <div class="d-flex flex-column flex-md-row align-items-start mb-4">
+                            <!-- Placeholder Image (Using a simple URL placeholder) -->
+                            <img src="{{booking.turf.image.url}}"  alt="Turf Image" 
+                                 class="img-fluid rounded-3 me-md-4 mb-3 mb-md-0" 
+                                 style="width: 150px; height: 120px; object-fit: cover;">
+                            
+                            <div class="flex-grow-1">
+                                <h2 class="fs-4 fw-bold mb-1">{{booking.turf.name | capfirst}}</h2>
+                                <p class="text-secondary mb-2 small">
+                                    <i class="fas fa-map-marker-alt" style="color: var(--primary-color);"></i>
+                                    {{booking.turf.location | capfirst}}
+                                </p>
+                                <div class="text-warning small">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                                    <span class="text-muted ms-2">(4.7)</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Booking Time Details -->
+                        <div class="row g-3 text-dark">
+                            <div class="col-6">
+                                <p class="fw-semibold text-dark m-0"><i class="fas fa-calendar-alt text-muted me-2"></i>Date</p>
+                                <p class="ms-4 text-secondary small m-0">{{booking.date}}</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="fw-semibold text-dark m-0"><i class="fas fa-clock text-muted me-2"></i>Time Slot</p>
+                                <p class="ms-4 text-secondary small m-0">{{booking.start_time}} - {{booking.end_time}}</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="fw-semibold text-dark m-0"><i class="fas fa-users text-muted me-2"></i>Players</p>
+                                <p class="ms-4 text-secondary small m-0">5-a-side</p>
+                            </div>
+                            <div class="col-6">
+                                <p class="fw-semibold text-dark m-0"><i class="fas fa-futbol text-muted me-2"></i>Sport</p>
+                                <p class="ms-4 text-secondary small m-0">Football</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Booking Summary & Payment (col-lg-4, sticky) -->
+            <div class="col-lg-4 animate-form">
+                <div class="card details-card p-3 p-md-4 sticky-summary">
+                    <div class="card-body">
+                        <h3 class="fs-5 fw-bold mb-4">Booking Summary</h3>
+                        
+                        <div class="d-grid gap-3 text-dark">
+                            <div class="d-flex justify-content-between">
+                                <span>Turf Rate</span>
+                                <span class="fw-bold">₹{{booking.turf.price}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Duration</span>
+                                <span class="fw-bold">{{booking.duration}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>Total</span>
+                                <span class="fw-bold">₹{{booking.ammount}}</span>
+                            </div>
+
+                            <!-- Total Payable -->
+                            <div class="border-top border-secondary border-opacity-25 mt-3 pt-3 d-flex justify-content-between align-items-center fs-5 fw-bolder">
+                                <span>Total Paid</span>
+                                <span class="text-success">₹{{booking.ammount}}</span>
+                            </div>
+                            {% if booking.is_canceled %}
+                            <h3 class="text-danger text-end fw-bold">Canceled</h3>
+                            {% else %}
+                             <div class="text-end">
+                                <a href="{% url 'canceled_booking' booking.id %}">
+                                <button class="btn btn-danger">Cancel Booking</button>
+                                </a>
+                            </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

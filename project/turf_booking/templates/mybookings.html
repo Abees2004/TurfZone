@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TurfZone - My Bookings</title>
+    <!-- Bootstrap 5.3.2 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Custom CSS Variables for easy theme changes */
+        :root {
+            --primary-color: #28a745; /* Success Green for Turf */
+            --secondary-color: #007bff; /* Blue for details */
+            --dark-color: #212529;
+            --light-color: #f8f9fa;
+            --cancel-color: #dc3545; /* Red */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+        }
+        
+
+
+        .booking-card {
+            border: none;
+            border-left: 6px solid var(--primary-color);
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+        }
+        
+        .booking-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .booking-details .icon {
+            color: var(--secondary-color);
+            width: 25px;
+            text-align: center;
+        }
+
+        .section-title {
+            color: var(--dark-color);
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Status Colors */
+        .status-upcoming {
+            background-color: #ffc107; /* Orange */
+            color: var(--dark-color) !important;
+            font-weight: 600;
+            padding: 0.3em 0.7em;
+            border-radius: 0.5rem;
+        }
+        
+        .status-completed {
+            background-color: var(--primary-color); 
+            color: var(--light-color) !important;
+            font-weight: 600;
+            padding: 0.3em 0.7em;
+            border-radius: 0.5rem;
+        }
+
+        .status-cancelled {
+            background-color: var(--cancel-color); 
+            color: var(--light-color) !important;
+            font-weight: 600;
+            padding: 0.3em 0.7em;
+            border-radius: 0.5rem;
+        }
+
+            .profile-img {
+      width: 35px;
+      height: 35px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+        /* Responsive Layout Adjustments */
+        @media (max-width: 767.98px) {
+            .booking-card {
+                border-left: none;
+                border-top: 6px solid var(--primary-color);
+            }
+        }
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
+    .profile-img {
+      width: 35px;
+      height: 35px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .navbar {
+        background-color: #ffffff; /* White background */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    }
+    .navbar-brand, .nav-link {
+        color: #212529 !important; /* Dark color for text */
+        font-weight: 500;
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .nav-link:hover {
+        color: #007bff !important; /* A nice blue for a modern accent */
+        transform: translateY(-2px);
+    }
+    .navbar-brand:hover {
+        color: #007bff !important;
+        transform: scale(1.05);
+    }
+    .navbar-nav .nav-link.active {
+      font-weight: 600;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+    .dropdown-menu {
+      background-color: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .dropdown-item {
+      color: #212529;
+    }
+    .dropdown-item:hover {
+      background-color: #f8f9fa;
+      color: #007bff;
+    }
+    .dropdown-divider {
+      background-color: #dee2e6;
+    }
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
+    .profile-img {
+      width: 35px;
+      height: 35px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    .navbar {
+        background-color: #ffffff; /* White background */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    }
+    .navbar-brand, .nav-link {
+        color: #212529 !important; /* Dark color for text */
+        font-weight: 500;
+        transition: color 0.3s ease, transform 0.3s ease;
+    }
+    .nav-link:hover {
+        color: #007bff !important; /* A nice blue for a modern accent */
+        transform: translateY(-2px);
+    }
+    .navbar-brand:hover {
+        color: #007bff !important;
+        transform: scale(1.05);
+    }
+    .navbar-nav .nav-link.active {
+      font-weight: 600;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 5px;
+    }
+    .dropdown-menu {
+      background-color: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .dropdown-item {
+      color: #212529;
+    }
+    .dropdown-item:hover {
+      background-color: #f8f9fa;
+      color: #007bff;
+    }
+    .dropdown-divider {
+      background-color: #dee2e6;
+    }
+  </style>
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+
+
+
+    <!-- Main Content Area -->
+    <div class="container" style="padding-top: 100px; padding-bottom: 60px;">
+        <h1 class="text-center mb-5 section-title">Your Game Reservations</h1>
+
+        <!-- Upcoming Bookings Section -->
+        <h2 class="section-title mb-4 border-bottom pb-2">Upcoming Bookings</h2>
+        <div class="row g-4 mb-5">
+
+ <div class="row g-4 mb-5">
+    {% for booking in bookings %}
+    <div class="col-sm-12 col-md-6 col-lg-4">
+        <a href="{% url 'my_booked_turf' booking.id %}" class="text-decoration-none d-block h-100">
+            <div class="card p-4 booking-card">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <h5 class="card-title fw-bold m-0 text-truncate">{{booking.turf.name}}</h5>
+                    <span class="badge status-upcoming">Upcoming</span>
+                </div>
+                <div class="booking-details text-muted small">
+                    <p class="mb-2 d-flex align-items-center"><i class="fas fa-calendar-alt icon me-2"></i> <strong>Date:</strong> {{booking.date}}</p>
+                    <p class="mb-2 d-flex align-items-center"><i class="fas fa-clock icon me-2"></i> <strong>Time:</strong> {{booking.start_time}} - {{booking.end_time}}</p>
+                    <p class="mb-2 d-flex align-items-center"><i class="fas fa-map-marker-alt icon me-2"></i> <strong>Location:</strong>{{booking.turf.location}}</p>
+                    <p class="mb-2 d-flex align-items-center"><i class="fas fa-futbol icon me-2"></i> <strong>Sport:</strong> Football (5-a-side)</p>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="fs-5 fw-bold text-success">₹{{booking.ammount}}</span>
+                    <button class="btn btn-sm btn-outline-primary" onclick="window.location.href='{% url 'my_booked_turf' booking.id %}'">Details</button>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% endfor %}
+
+    <div class="col-sm-12 col-md-6 col-lg-4">
+        <div class="card p-4 bg-light text-center border-dashed" style="border: 2px dashed #ccc; border-radius: 0.75rem; height: 100%;">
+            <div class="d-flex flex-column align-items-center justify-content-center h-100 py-3">
+                <i class="fas fa-plus-circle text-muted fs-1 mb-3"></i>
+                <p class="text-muted fw-bold mb-3">No more upcoming bookings.</p>
+                <a href="#" class="btn btn-custom">Book a New Turf</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+   
+    
+    <!-- Custom Modal Structure (Replaces alert() and confirm()) -->
+    <div class="modal fade" id="customActionModal" tabindex="-1" aria-labelledby="customActionModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 0.75rem;">
+          <div class="modal-header border-0 pb-0">
+            <h5 class="modal-title section-title" id="customActionModalLabel">Action Title</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body pt-2 pb-4">
+            <p id="customActionModalBody">Action Message</p>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap 5 JavaScript Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        /**
+         * Custom Modal Handler (replaces alert/confirm)
+         * @param {string} title The title for the modal.
+         * @param {string} message The message content for the modal body.
+         */
+        function showCustomModal(title, message) {
+            document.getElementById('customActionModalLabel').textContent = title;
+            document.getElementById('customActionModalBody').textContent = message;
+            
+            // Get the Bootstrap modal instance and show it
+            const modal = new bootstrap.Modal(document.getElementById('customActionModal'));
+            modal.show();
+        }
+    </script>
+</body>
+</html>

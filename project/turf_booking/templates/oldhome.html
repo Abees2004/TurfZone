@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turf Booking - Book a Field</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" xintegrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+    <!-- Header & Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="bi bi-geo-fill fs-4 me-2"></i>
+                <span class="fs-4 fw-bold">TurfBooker</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Book Now</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Locations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">{{user.username}}</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout_view' %}">logout</a>
+                    </li>
+                    <li class=nav-item>
+                        <a class=nav-link href="{% url 'login_view' %}"></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="bg-primary text-white text-center py-5" style="background-image: url('https://placehold.co/1920x600/1e293b/ffffff?text=Professional+Turf+Field'); background-size: cover; background-position: center; position: relative;">
+        <div class="overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.6);"></div>
+        <div class="container position-relative z-1 py-5">
+            <h1 class="display-3 fw-bold mb-4">Book Your Turf Instantly </h1>
+            <p class="lead mb-4">Find and book the perfect turf field for your next game or practice in just a few clicks.</p>
+            <a href="#" class="btn btn-success btn-lg rounded-pill px-5">Book a Field Now</a>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row text-center mb-5">
+                <div class="col-12">
+                    <h2 class="fw-bold">Why Choose Us?</h2>
+                    <p class="lead text-secondary">Simple, fast, and reliable turf booking.</p>
+                </div>
+            </div>
+            <div class="row g-4">
+                <!-- Feature 1 -->
+                <div class="col-md-4">
+                    <div class="card p-4 rounded-3 shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <i class="bi bi-clock-history fs-1 text-primary mb-3"></i>
+                            <h5 class="card-title fw-bold">Instant Booking</h5>
+                            <p class="card-text text-secondary">Secure your spot in seconds with our seamless online booking system.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Feature 2 -->
+                <div class="col-md-4">
+                    <div class="card p-4 rounded-3 shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <i class="bi bi-geo-alt fs-1 text-primary mb-3"></i>
+                            <h5 class="card-title fw-bold">Wide Locations</h5>
+                            <p class="card-text text-secondary">Explore fields in various locations and find one that's perfect for you.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- Feature 3 -->
+                <div class="col-md-4">
+                    <div class="card p-4 rounded-3 shadow-sm border-0">
+                        <div class="card-body text-center">
+                            <i class="bi bi-credit-card fs-1 text-primary mb-3"></i>
+                            <h5 class="card-title fw-bold">Secure Payments</h5>
+                            <p class="card-text text-secondary">Enjoy peace of mind with our safe and encrypted payment gateways.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Turf Showcase Section -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center fw-bold mb-5">Our Fields</h2>
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 rounded-3 shadow-sm">
+                        <img src="https://placehold.co/600x400/293b1e/ffffff?text=Turf+Field+1" class="card-img-top rounded-top" alt="Turf Field 1">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">Urban Turf Arena</h5>
+                            <p class="card-text text-secondary">A centrally located field, perfect for a quick game after work.</p>
+                            <a href="#" class="btn btn-outline-success w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 rounded-3 shadow-sm">
+                        <img src="https://placehold.co/600x400/293b1e/ffffff?text=Turf+Field+2" class="card-img-top rounded-top" alt="Turf Field 2">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">The Green Hub</h5>
+                            <p class="card-text text-secondary">State-of-the-art facilities with high-quality artificial turf.</p>
+                            <a href="#" class="btn btn-outline-success w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card border-0 rounded-3 shadow-sm">
+                        <img src="https://placehold.co/600x400/293b1e/ffffff?text=Turf+Field+3" class="card-img-top rounded-top" alt="Turf Field 3">
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">Lakeside Ground</h5>
+                            <p class="card-text text-secondary">A picturesque field with stunning views, ideal for weekend games.</p>
+                            <a href="#" class="btn btn-outline-success w-100">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-5 mt-auto">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h5 class="fw-bold">TurfBooker</h5>
+                    <p class="text-secondary">Your one-stop solution for booking turf fields easily and efficiently.</p>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 class="fw-bold">Quick Links</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li><a href="#" class="text-decoration-none text-white">Home</a></li>
+                        <li><a href="#" class="text-decoration-none text-white">Booking</a></li>
+                        <li><a href="#" class="text-decoration-none text-white">About Us</a></li>
+                        <li><a href="#" class="text-decoration-none text-white">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h5 class="fw-bold">Contact Us</h5>
+                    <ul class="list-unstyled text-secondary">
+                        <li><i class="bi bi-envelope-fill me-2"></i> info@turfbooker.com</li>
+                        <li><i class="bi bi-phone-fill me-2"></i> +1 (123) 456-7890</li>
+                        <li><i class="bi bi-geo-alt-fill me-2"></i> 123 Sports Ave, City, State</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="text-secondary my-4">
+            <div class="text-center text-secondary">
+                <p class="mb-0">&copy; 2023 TurfBooker. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" xintegrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>

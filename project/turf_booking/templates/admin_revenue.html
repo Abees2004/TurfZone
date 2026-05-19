@@ -1,0 +1,94 @@
+<!-- Revenue Section -->
+<div class="card mb-4">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <span><i class="bi bi-bar-chart-fill me-2"></i> Revenue Overview</span>
+    <div class="btn-group">
+      <button class="btn btn-sm btn-outline-secondary active" data-period="month">This Month</button>
+      <button class="btn btn-sm btn-outline-secondary" data-period="quarter">This Quarter</button>
+      <button class="btn btn-sm btn-outline-secondary" data-period="year">This Year</button>
+    </div>
+  </div>
+  <div class="card-body">
+    <div class="row mb-3">
+      <div class="col-md-4">
+        <div class="h4">₹ 2,35,000</div>
+        <div class="text-muted">Revenue (This Month)</div>
+      </div>
+      <div class="col-md-4">
+        <div class="h4">+12%</div>
+        <div class="text-muted">vs Last Month</div>
+      </div>
+      <div class="col-md-4">
+        <div class="h4">₹ 7,00,000</div>
+        <div class="text-muted">Quarter to Date</div>
+      </div>
+    </div>
+    <div class="chart-container" style="height: 300px;">
+      <canvas id="revenueTrendChart"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- JS for handling period buttons and rendering chart -->
+<script>
+  const revenueCtx2 = document.getElementById('revenueTrendChart').getContext('2d');
+  
+  // Sample data
+  const dataset = {
+    month: [200000, 230000, 250000, 220000, 270000, 300000, 235000],
+    quarter: [600000, 650000, 700000],
+    year: [2000000, 2200000, 2500000, 2800000, 3000000, 3200000]
+  };
+  
+  let currentPeriod = 'month';
+  
+  const revenueTrendChart = new Chart(revenueCtx2, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+      datasets: [{
+        label: 'Revenue',
+        data: dataset[currentPeriod],
+        borderColor: 'rgba(40,167,69,1)',
+        backgroundColor: 'rgba(40,167,69,0.2)',
+        borderWidth: 2,
+        tension: 0.3,
+        pointRadius: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+  
+  // Handle period buttons
+  document.querySelectorAll('[data-period]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      // update button states
+      document.querySelectorAll('[data-period]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      
+      // update data and labels
+      currentPeriod = btn.getAttribute('data-period');
+      let labels, data;
+      if (currentPeriod === 'month') {
+        labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+        data = dataset.month;
+      } else if (currentPeriod === 'quarter') {
+        labels = ['Q1', 'Q2', 'Q3'];
+        data = dataset.quarter;
+      } else {
+        labels = ['2019','2020','2021','2022','2023','2024'];
+        data = dataset.year;
+      }
+      revenueTrendChart.data.labels = labels;
+      revenueTrendChart.data.datasets[0].data = data;
+      revenueTrendChart.update();
+    });
+  });
+</script>

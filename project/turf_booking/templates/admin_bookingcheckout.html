@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TurfZone Admin - Booking Details</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --bs-primary: #28a745;
+            --bs-success: #20c997;
+            --bs-info: #0dcaf0;
+            --bs-warning: #ffc107;
+            --bs-danger: #dc3545;
+            --bs-font-sans-serif: 'Poppins', sans-serif;
+        }
+        body {
+            font-family: var(--bs-font-sans-serif);
+            background-color: var(--bs-light-bg-subtle);
+        }
+        .main-container {
+            min-height: 100vh;
+            display: flex;
+            background-color: var(--bs-body-bg);
+        }
+        .sidebar {
+            width: 250px;
+            flex-shrink: 0;
+            background-color: var(--bs-tertiary-bg);
+            border-right: 1px solid var(--bs-border-color-translucent);
+            transition: all 0.3s ease-in-out;
+            transform: translateX(0);
+        }
+        .sidebar.collapsed {
+            transform: translateX(-250px);
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                z-index: 1050;
+                transform: translateX(-250px);
+            }
+            .sidebar.show {
+                transform: translateX(0);
+            }
+        }
+        .sidebar .list-group-item {
+            border: none;
+            color: var(--bs-body-color);
+            background-color: transparent;
+            font-weight: 500;
+        }
+        .sidebar .list-group-item.active,
+        .sidebar .list-group-item:hover {
+            background-color: var(--bs-primary);
+            color: var(--bs-white);
+            border-radius: 5px;
+        }
+        .sidebar .list-group-item i {
+            font-size: 1.25rem;
+        }
+        .sidebar .list-group-item.active {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 2rem;
+        }
+        .card {
+            border: none;
+            border-radius: 0.75rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .navbar {
+            background-color: var(--bs-tertiary-bg) !important;
+            border-bottom: 1px solid var(--bs-border-color-translucent);
+        }
+        .form-control.search-box {
+            border-radius: 20px;
+        }
+        .list-group-item strong {
+            display: inline-block;
+            width: 150px; /* Aligns the data points */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+
+        <div class="sidebar d-flex flex-column p-3" id="sidebar">
+            <div class="d-flex align-items-center mb-4">
+                <img src="https://via.placeholder.com/40" alt="Logo" class="rounded-circle me-3">
+                <h5 class="my-0">TurfZone Admin</h5>
+            </div>
+            <div class="list-group flex-grow-1">
+                <a href="{% url 'admin_dashboard' %}" class="list-group-item d-flex align-items-center active">
+                    <i class="bi bi-house-door-fill me-3"></i>
+                    Dashboard
+                </a>
+                <a href="{% url 'admin_userlist' %}" class="list-group-item d-flex align-items-center">
+                    <i class="bi bi-people-fill me-3"></i>
+                    Users
+                </a>
+                <a href="{% url 'admin_partnerlist' %}" class="list-group-item d-flex align-items-center">
+                    <i class="bi bi-handshake-fill me-3"></i>
+                    Partners
+                </a>
+                <a href="{% url 'admin_turflist' %}" class="list-group-item d-flex align-items-center">
+                    <i class="bi bi-geo-alt-fill me-3"></i>
+                    Turfs
+                </a>
+                <a href="{% url 'admin_bookinglist' %}" class="list-group-item d-flex align-items-center">
+                    <i class="bi bi-calendar-check-fill me-3"></i>
+                    Bookings
+                </a>
+                <!-- <a href="#revenue" class="list-group-item d-flex align-items-center">
+                    <i class="bi bi-graph-up-arrow me-3"></i>
+                    Revenue
+                </a> -->
+                <a href="{% url 'admin_requestlist' %}" class="list-group-item d-flex align-items-center">
+                    <i class="bi bi-person-plus-fill me-3"></i>
+                    New Requests
+                </a>
+                <a href="{% url 'admin_turfrequestlist' %}" class="list-group-item d-flex align-items-center">
+                    <i class="bi bi-person-plus-fill me-3"></i>
+                    New Turf Requests
+                </a>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mt-auto p-3 border-top">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="theme-toggle">
+                    <label class="form-check-label" for="theme-toggle">Dark Mode</label>
+                </div>
+                <a href="{% url 'logout_view' %}" class="btn btn-outline-danger">
+                    <i class="bi bi-box-arrow-right"></i> Logout
+                </a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <nav class="navbar navbar-expand-lg rounded-3 mb-4 sticky-top">
+                <div class="container-fluid">
+                    <button class="btn btn-outline-secondary d-md-none me-3" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar" aria-expanded="false" aria-controls="sidebar">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <div class="d-none d-lg-block">
+                        <form class="d-flex" role="search">
+                            <input class="form-control search-box me-2" type="search" placeholder="Search..." aria-label="Search">
+                        </form>
+                    </div>
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="https://via.placeholder.com/30" alt="Profile" class="rounded-circle me-2"> Admin User
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="#">Profile</a></li>
+                                <li><a class="dropdown-item" href="#">Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger" href="#">Logout</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="mb-0">Booking Details <span id="booking-id-display"></span></h1>
+                <a href="bookings.html" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left me-1"></i> Back to Bookings
+                </a>
+            </div>
+            {% if booking %}
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-calendar-check-fill me-2"></i> Booking Information</span>
+                    <span id="booking-status" class="badge rounded-pill bg-success">Confirmed</span>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4>Booking Details</h4>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>Booking ID:</strong> <span id="booking-id">{{booking.id}}</span></li>
+                                <li class="list-group-item"><strong>Booked by:</strong> <span id="booked-by"></span>{{booking.user.username}}</li>
+                                <li class="list-group-item"><strong>Contact:</strong> <span id="user-contact"></span></li>
+                                <li class="list-group-item"><strong>Booking Date:</strong> <span id="booking-date">{{booking.date}}</span></li>
+                                <li class="list-group-item"><strong>Time Slot:</strong> <span id="time-slot">{{booking.start_time}}-{{booking.end_time}}</span></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h4>Turf Details</h4>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item"><strong>Turf ID:</strong> <span id="turf-id">{{booking.turf.id}}</span></li>
+                                <li class="list-group-item"><strong>Turf Name:</strong> <span id="turf-name">{{booking.turf.name}}</span></li>
+                                <li class="list-group-item"><strong>Turf Location:</strong> <span id="turf-location">{{booking.turf.location}}</span></li>
+                                <li class="list-group-item"><strong>Partner:</strong> <span id="turf-partner">{{booking.turf.partner.username}}</span></li>
+                                <li class="list-group-item"><strong>Price/Hour:</strong> <span id="turf-price">{{booking.turf.price}}/Hour</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span><i class="bi bi-currency-rupee me-2"></i> Payment Summary</span>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Subtotal:</strong>
+                            <span id="subtotal"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Tax (GST):</strong>
+                            <span id="tax-amount"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Discount:</strong>
+                            <span id="discount-amount"></span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <h4>Total Amount:</h4>
+                            <h4 id="total-amount">{{booking.ammount}}</h4>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-footer d-flex justify-content-end gap-2">
+                    <button class="btn btn-warning" id="cancelBookingBtn">
+                        <i class="bi bi-x-circle-fill me-1"></i> Cancel Booking
+                    </button>
+                    <button class="btn btn-danger" id="refundBtn">
+                        <i class="bi bi-cash-stack me-1"></i> Issue Refund
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Theme toggle logic and sidebar toggle
+        document.getElementById('theme-toggle').addEventListener('change', function() {
+            if (this.checked) {
+                document.documentElement.setAttribute('data-bs-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-bs-theme', 'light');
+            }
+        });
+
+        const sidebar = document.getElementById('sidebar');
+        new bootstrap.Collapse(sidebar, { toggle: false });
+        document.querySelector('[data-bs-target="#sidebar"]').addEventListener('click', function() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('show');
+            }
+        });
+
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Dummy data for demonstration
+        const dummyBookingData = {
+            'B1001': {
+                id: 'B1001',
+                turf: 'City Sports Complex',
+                turfId: 'T001',
+                turfLocation: '123 Main St, Anytown',
+                turfPartner: 'Alex Carter',
+                turfPrice: '₹1500',
+                bookedBy: 'Sam Smith',
+                userContact: '+91 98765 43210',
+                date: 'Oct 20, 2025',
+                timeSlot: '10:00 AM - 11:00 AM',
+                status: 'Confirmed',
+                payment: {
+                    subtotal: 1500,
+                    tax: 180,
+                    discount: 0,
+                    total: 1680
+                }
+            },
+            'B1002': {
+                id: 'B1002',
+                turf: 'Greenland Football Turf',
+                turfId: 'T002',
+                turfLocation: '456 Park Ave, Smallville',
+                turfPartner: 'Jane Doe',
+                turfPrice: '₹1800',
+                bookedBy: 'John Doe',
+                userContact: '+91 99887 76655',
+                date: 'Oct 20, 2025',
+                timeSlot: '11:00 AM - 12:00 PM',
+                status: 'Confirmed',
+                payment: {
+                    subtotal: 1800,
+                    tax: 216,
+                    discount: 100,
+                    total: 1916
+                }
+            },
+            'B1003': {
+                id: 'B1003',
+                turf: 'Urban Arena',
+                turfId: 'T003',
+                turfLocation: '789 Center Blvd, Metropolis',
+                turfPartner: 'Alex Carter',
+                turfPrice: '₹1200',
+                bookedBy: 'Peter Pan',
+                userContact: '+91 90000 00000',
+                date: 'Oct 21, 2025',
+                timeSlot: '09:00 AM - 10:00 AM',
+                status: 'Pending',
+                payment: {
+                    subtotal: 1200,
+                    tax: 144,
+                    discount: 0,
+                    total: 1344
+                }
+            }
+        };
+    </script>
+</body>
+</html> 

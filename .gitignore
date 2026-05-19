@@ -1,0 +1,124 @@
+# =========================
+# Django
+# =========================
+*.log
+*.pot
+*.pyc
+__pycache__/
+db.sqlite3
+media/
+staticfiles/
+
+# =========================
+# Environment Variables
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Virtual Environment
+# =========================
+venv/
+env/
+ENV/
+.venv/
+
+# =========================
+# Python
+# =========================
+*.pyo
+*.pyd
+*.swp
+.python-version
+pip-log.txt
+pip-delete-this-directory.txt
+
+# =========================
+# Django Migrations
+# (optional — usually keep migrations)
+# =========================
+**/migrations/
+!**/migrations/__init__.py
+# Migrations (optional)
+# Django migrations
+*/migrations/*
+!*/migrations/__init__.py
+**/migrations/*.py
+!**/migrations/__init__.py
+**/migrations/*.pyc
+
+
+# =========================
+# VS Code
+# =========================
+.vscode/
+
+# =========================
+# PyCharm
+# =========================
+.idea/
+
+# =========================
+# Mac/Linux
+# =========================
+.DS_Store
+
+# =========================
+# Windows
+# =========================
+Thumbs.db
+desktop.ini
+
+# =========================
+# Testing / Coverage
+# =========================
+htmlcov/
+.coverage
+.coverage.*
+.pytest_cache/
+.tox/
+.cache/
+
+# =========================
+# Build Files
+# =========================
+build/
+dist/
+*.egg-info/
+
+# =========================
+# Node Modules
+# (if React frontend included)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# React Build
+# =========================
+frontend/build/
+frontend/dist/
+
+# =========================
+# MySQL Dumps
+# =========================
+*.sql
+
+# =========================
+# Uploaded Images
+# =========================
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.webp
+
+# =========================
+# Secrets / Keys
+# =========================
+secret.key
+*.pem
+*.key

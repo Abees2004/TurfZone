@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Confirmed</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        :root {
+            --primary-color: #28a745;
+            --secondary-color: #6c757d;
+            --light-bg: #f8f9fa;
+        }
+        .navbar {
+            background-color: var(--dark-color) !important;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: var(--light-color) !important;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .booking-card {
+            border: none;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .icon-lg {
+            font-size: 3rem;
+            color: var(--primary-color);
+        }
+
+        .separator {
+            border-bottom: 2px dashed #ddd;
+        }
+    </style>
+</head>
+<body>
+
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-4" href="#">TurfZone</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'turfs' %}">Turfs</a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'my_bookings' %}">Bookings</a>
+                    </li>
+                    {% endif %}
+                    {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'myprofile' %}">{{user.username | capfirst}}</a></li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login_view' %}">Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card booking-card p-4 text-center">
+                    <div class="card-body">
+                        <i class="bi bi-check-circle-fill icon-lg mb-3"></i>
+                        <h2 class="card-title fw-bold mb-2">Booking Confirmed!</h2>
+                        <p class="card-text text-secondary mb-4">Your turf booking has been successfully placed. A confirmation email has been sent to your inbox.</p>
+                        
+                        <hr class="my-4">
+
+                        <div class="text-start">
+                            <h4 class="fw-bold mb-3">Booking Summary</h4>
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-2">
+                                    <h6 class="fw-bold">Turf Name:</h6>
+                                    <p class="text-secondary">{{booking.turf.name}}</p>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <h6 class="fw-bold">Date & Time:</h6>
+                                    <p class="text-secondary">{{booking.date}},{{booking.start_time}} - {{booking.end_time}}</p>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <h6 class="fw-bold">Location:</h6>
+                                    <p class="text-secondary">{{booking.turf.location}}</p>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <h6 class="fw-bold">Booking ID:</h6>
+                                    <p class="text-secondary">#{{booking.id}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="text-start">
+                            <h4 class="fw-bold mb-3">Your Details</h4>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <h6 class="fw-bold">Full Name:</h6>
+                                    <p class="text-secondary">{{booking.user.username}}</p>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <h6 class="fw-bold">Email:</h6>
+                                    <p class="text-secondary">{{booking.user.email}}</p>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <h6 class="fw-bold">Phone:</h6>
+                                    <p class="text-secondary">+91 98765 43210</p>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <h6 class="fw-bold">Total Paid:</h6>
+                                    <p class="text-secondary">₹{{booking.ammount}}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <a href="#" class="btn btn-primary btn-lg me-2">View My Bookings</a>
+                            <a href="#" class="btn btn-outline-secondary btn-lg">Back to Homepage</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
